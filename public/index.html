@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style/base.css">
+    <link rel="stylesheet" href="./style/darktheme.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.28.2/jsoneditor.css"
+        integrity="sha512-zvYEmJN8wW8/+06U2DlStB162l5RKhItjRf9wLWBhKK6xmnh1/UBlegUYRVKTACm5lqdjpdJ1yCkci10Bbw9Hg=="
+        crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/5.28.2/jsoneditor.min.js"
+        integrity="sha512-bfsUyGahu9QXboUnOAGfGubz8AMLY10PIavnh2q7lc/M5HhR3NOXYqFVTCMS9TcfZqQihbiibdVTtC3woU7gmQ=="
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="header center_y sp ph-10">
+        <!-- <img height="22px" src="https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg" alt="" srcset=""> -->
+        <p>Expressjs squelize mysql api boilerplates generation </p>
+        <div id="generate" class="button">Generate</div>
+    </div>
+
+
+    <div id="jsoneditor"></div>
+
+    <div class="overlay hide center_xy loading">
+        <div class="lds-facebook"><div></div><div></div><div></div></div>
+    </div>
+
+
+    <script>
+        // create the editor
+        const container = document.getElementById("jsoneditor")
+        const options = {
+            mode: "code",
+            search: true
+        }
+        const editor = new JSONEditor(container, options)
+
+        // set json
+        const initialJson = {
+    "name": "Igniter",
+    "description": "No decription provided",
+    "version": "1.0.0",
+    "database": {
+        "host": "localhost",
+        "name": "igniter",
+        "user": "root",
+        "password": ""
+    },
+    "models": [{
+            "name": "User",
+            "fields": [{
+                    "name": "username",
+                    "type": "STRING",
+                    "constraints": ["allowNull", "unique"],
+                    "validations": ["isAlphanumeric"]
+                },
+                {
+                    "name": "age",
+                    "type": "INTEGER"
+                },
+                {
+                    "name": "phone",
+                    "type": "STRING"
+
+                }
+            ],
+            "associations": [{
+                "name": "hasMany",
+                "target": "Post"
+            }]
+        },
+        {
+            "name": "Post",
+            "fields": [{
+                    "name": "text",
+                    "type": "STRING"
+                },
+                {
+                    "name": "published",
+                    "type": "BOOLEAN"
+                }
+
+            ],
+            "associations": [{
+                "name": "belongsTo",
+                "target": "User"
+            }]
+        }
+
+    ]
+}
+
+           
+
+        editor.set(initialJson)
+
+        // get json
+
+
+       
+
+        $("#generate").click(function(){
+            $(".loading").toggleClass("hide")
+
+            axios.post('/generate', editor.get())
+            .then(function (response) {
+                console.log(response.data);
+                if(response.data.generated){
+                    window.open( window.location.href+response.data.url, '_blank');
+                }else{
+                    alert(response.data.message)
+                }
+                
+                $(".loading").toggleClass("hide")
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+         
+
+
+         
+        
+
+//do something
+        });
+    </script>
+
+<style>
+    #jsoneditor{
+        height: 93vh;
+    }
+    body{
+        margin: 0;
+        padding: 0;
+    }
+    #jsoneditor div.jsoneditor{
+        border: none;
+    }
+
+        #jsoneditor div.jsoneditor-menu {
+        background-color:#282C34  ;
+        border-bottom: none;
+        
+    }
+    .header {
+        height: 7vh;
+        background-color:#21252B;
+    }
+    
+    h1{
+        color: white;
+    }
+    p{
+        color: rgb(194, 194, 194);
+        font-size: 13px;
+    }
+    #generate {
+        transition: 200ms;
+        font-family: inherit;
+        border-radius: 5px;
+        color: #42A5F5;
+        background-color:#42a4f518 ;
+        
+        padding: 10px;
+    }
+    /* #generate:hover{
+        background-color:#42a4f510 ;
+        border-radius: 5px;
+    } */
+    .loading{
+        background-color: rgb(34, 34, 34);
+     
+        z-index: 10;
+    }
+
+    .hide{
+        display: none;
+    }
+
+
+    .lds-facebook {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-facebook div {
+  display: inline-block;
+  position: absolute;
+  left: 8px;
+  width: 16px;
+  background: #fff;
+  animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+}
+.lds-facebook div:nth-child(1) {
+  left: 8px;
+  animation-delay: -0.24s;
+}
+.lds-facebook div:nth-child(2) {
+  left: 32px;
+  animation-delay: -0.12s;
+}
+.lds-facebook div:nth-child(3) {
+  left: 56px;
+  animation-delay: 0;
+}
+@keyframes lds-facebook {
+  0% {
+    top: 8px;
+    height: 64px;
+  }
+  50%, 100% {
+    top: 24px;
+    height: 32px;
+  }
+}
+</style>
+</body>
+
+</html>
