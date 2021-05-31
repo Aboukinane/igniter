@@ -1,0 +1,11 @@
+---
+application:
+  name: "igniter"
+  project: "blog"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-igniter"
+  routes:
+  - application_name: "igniter"
+    paths:
+    - "/*"
