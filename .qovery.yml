@@ -3,6 +3,7 @@ application:
   name: "igniter"
   project: "blog"
   organization: "QoveryCommunity"
+  port : "3000"
 routers:
 - name: "main-igniter"
   routes:
